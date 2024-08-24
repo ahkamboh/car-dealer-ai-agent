@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import dynamoDB from "../../../../awsConfig";
-
 export async function GET(req: Request) {
   const pkPrefix = "TEST";
   const skPrefix = "RECORD";
