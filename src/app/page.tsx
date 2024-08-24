@@ -1,25 +1,16 @@
-// components/Spline3D.tsx
 "use client";
-
-import HyperText from '@/components/magicui/hyper-text';
 import React, { useState, useRef, Suspense, lazy, useCallback } from 'react';
 import { ChevronRight } from "lucide-react";
- 
 import { cn } from "@/lib/utils";
 import AnimatedGradientText from "@/components/magicui/animated-gradient-text";
 import SparklesText from '@/components/magicui/sparkles-text';
-// Lazy load the Spline component
 const LazySpline = lazy(() => import('@splinetool/react-spline'));
-
 interface SplineInstance {
   setVariable: (variable: string, value: number) => void;
 }
-
 const Spline3D: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const splineRef = useRef<SplineInstance | null>(null);
-
-  // Use useCallback to prevent unnecessary re-renders
   const setSplineVariable = useCallback((variable: string, value: number) => {
     if (splineRef.current) {
       try {
@@ -55,21 +46,21 @@ const Spline3D: React.FC = () => {
 
   return (
     <div className="relative w-full h-[calc(100vh-3.9rem)]">
-        <div className="absolute left-1/2 text-center  top-[40%] -translate-x-1/2 -translate-y-1/2">
+      <div className="absolute left-1/2 text-center  top-[40%] -translate-x-1/2 -translate-y-1/2">
         <AnimatedGradientText className='cursor-pointer'>
-        🎉 <hr className="mx-2 h-4 w-[1px] shrink-0 bg-gray-300" />{" "}
-        <span
-          className={cn(
-            `inline animate-gradient bg-gradient-to-r from-[#ffaa40] via-[#9c40ff] to-[#ffaa40] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent poppins-light`,
-          )}
-        >
-          Introducing Cortex
-        </span>
-        <ChevronRight className="ml-1 size-3 transition-transform duration-300 ease-in-out group-hover:translate-x-0.5" />
-      </AnimatedGradientText>
-      <SparklesText text=" Fuel Car Dealership's with Cortex" className='text-3xl mt-5 poppins-bold ' />
-      <p className='poppins-light'>Unlock deeper customer insights and elevate experiences  <br />with Cortex&lsquo;s AI-powered dashboard</p>
-  </div>
+          🎉 <hr className="mx-2 h-4 w-[1px] shrink-0 bg-gray-300" />{" "}
+          <span
+            className={cn(
+              `inline animate-gradient bg-gradient-to-r from-[#ffaa40] via-[#9c40ff] to-[#ffaa40] bg-[length:var(--bg-size)_100%] bg-clip-text text-transparent poppins-light`,
+            )}
+          >
+            Introducing Cortex
+          </span>
+          <ChevronRight className="ml-1 size-3 transition-transform duration-300 ease-in-out group-hover:translate-x-0.5" />
+        </AnimatedGradientText>
+        <SparklesText text=" Fuel Car Dealership's with Cortex" className='text-3xl mt-5 ClashDisplay-Bold  ' />
+        <p className='poppins-light'>Unlock deeper customer insights and elevate experiences  <br />with Cortex&lsquo;s AI-powered dashboard</p>
+      </div>
       <nav className="max-w-4xl mx-auto relative top-8 bg-glass  rounded-full flex justify-between items-center p-2">
         <div className="scale-[.8]">
           <img src="/logo.svg" alt="" />
