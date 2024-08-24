@@ -126,3 +126,13 @@ body {
     @apply bg-background text-foreground;
   }
 }
+
+@font-face {
+  font-family: 'ClashDisplay-Bold';
+  src: url('/ClashDisplay-Bold.otf') format('opentype');
+  font-weight: 700;
+  font-style: normal;
+}
+.ClashDisplay-Bold {
+  font-family: 'ClashDisplay-Bold', sans-serif;
+}
