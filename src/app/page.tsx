@@ -68,7 +68,7 @@ const Spline3D: React.FC = () => {
         <ChevronRight className="ml-1 size-3 transition-transform duration-300 ease-in-out group-hover:translate-x-0.5" />
       </AnimatedGradientText>
       <SparklesText text=" Fuel Car Dealership's with Cortex" className='text-3xl mt-5 poppins-bold ' />
-      <p className='poppins-light'>Unlock deeper customer insights and elevate experiences  <br />with Cortex's AI-powered dashboard</p>
+      <p className='poppins-light'>Unlock deeper customer insights and elevate experiences  <br />with Cortex&lsquo;s AI-powered dashboard</p>
   </div>
       <nav className="max-w-4xl mx-auto relative top-8 bg-glass  rounded-full flex justify-between items-center p-2">
         <div className="scale-[.8]">
