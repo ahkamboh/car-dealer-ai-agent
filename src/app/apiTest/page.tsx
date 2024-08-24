@@ -7,6 +7,7 @@ export default function HomePage() {
   const [attribute1, setAttribute1] = useState("");
   const [record, setRecord] = useState<any>(null);
   const [message, setMessage] = useState("");
+  const [sentimentResult, setSentimentResult] = useState<any>(null);
 
   const handleCreate = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -49,6 +50,26 @@ export default function HomePage() {
     }
   };
 
+  const handleSentimentAnalysis = async () => {
+    const pk = "TEST#24e7b557-c9ec-45e4-a52d-a9c56a07b8f9";
+    const sk = "RECORD#2024-08-24T14:32:05.673Z";
+
+    const url = `/api/sentimentAnalysis?PK=${encodeURIComponent(
+      pk
+    )}&SK=${encodeURIComponent(sk)}`;
+    console.log("Sentiment Analysis URL:", url);
+
+    const response = await fetch(url);
+
+    if (response.ok) {
+      const data = await response.json();
+      setSentimentResult(data);
+      setMessage("Sentiment analysis completed successfully");
+    } else {
+      setMessage("Failed to perform sentiment analysis");
+    }
+  };
+
   return (
     <div style={{ padding: "20px" }}>
       <h1>DynamoDB Test Page</h1>
@@ -71,12 +92,25 @@ export default function HomePage() {
         <button type="submit">Read Most Recent Record</button>
       </form>
 
+      <h2>Analyze Sentiment</h2>
+      <button onClick={handleSentimentAnalysis}>Analyze Sentiment</button>
+
       {message && <p>{message}</p>}
 
       {record && (
         <div>
           <h3>Record Details:</h3>
           <pre>{JSON.stringify(record, null, 2)}</pre>
+        </div>
+      )}
+
+      {sentimentResult && (
+        <div>
+          <h3>Sentiment Analysis Result:</h3>
+          <p>Sentiment: {sentimentResult.sentiment}</p>
+          <pre>
+            Scores: {JSON.stringify(sentimentResult.sentimentScore, null, 2)}
+          </pre>
         </div>
       )}
     </div>

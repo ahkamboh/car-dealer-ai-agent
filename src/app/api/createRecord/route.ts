@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
-import dynamoDB from "../../../../awsConfig";
+import { DynamoDBDocumentClient, PutCommand } from "@aws-sdk/lib-dynamodb";
+import { dynamoDBClient } from "../../../../awsConfig";
+
+// Initialize the DynamoDB Document Client
+const documentClient = DynamoDBDocumentClient.from(dynamoDBClient);
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -15,7 +19,8 @@ export async function POST(req: Request) {
   };
 
   try {
-    await dynamoDB.put(params).promise();
+    // Use the DynamoDB Document Client to put the item
+    await documentClient.send(new PutCommand(params));
     console.log("Item created:", params.Item); // Debugging log
     return NextResponse.json(
       { message: "Record created successfully", item: params.Item },

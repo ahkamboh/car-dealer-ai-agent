@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
-import dynamoDB from "../../../../awsConfig";
+import { DynamoDBDocumentClient, ScanCommand } from "@aws-sdk/lib-dynamodb";
+import { dynamoDBClient } from "../../../../awsConfig";
+
+// Initialize the DynamoDB Document Client
+const documentClient = DynamoDBDocumentClient.from(dynamoDBClient);
 
 export async function GET(req: Request) {
   const pkPrefix = "TEST";
@@ -18,7 +22,7 @@ export async function GET(req: Request) {
   console.log("Scanning with params:", params); // Debugging log
 
   try {
-    const data = await dynamoDB.scan(params).promise();
+    const data = await documentClient.send(new ScanCommand(params));
     console.log("Data retrieved:", data.Items); // Debugging log
     return NextResponse.json(data.Items, { status: 200 });
   } catch (error) {

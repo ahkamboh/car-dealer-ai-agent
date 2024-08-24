@@ -1,13 +1,20 @@
-import AWS from 'aws-sdk';
+import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
+import { ComprehendClient } from "@aws-sdk/client-comprehend";
 
-// AWS CONFIG FILE
-
-AWS.config.update({
-  region: 'ap-northeast-1', // e.g., 'us-east-1'
-  accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-  secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+const dynamoDBClient = new DynamoDBClient({
+  region: "ap-northeast-1",
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+  },
 });
 
-const dynamoDB = new AWS.DynamoDB.DocumentClient();
+const comprehendClient = new ComprehendClient({
+  region: "ap-northeast-1",
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+  },
+});
 
-export default dynamoDB;
+export { dynamoDBClient, comprehendClient };
