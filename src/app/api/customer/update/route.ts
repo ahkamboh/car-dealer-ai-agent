@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { UpdateCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import { dynamoDBClient } from "../../../../../awsConfig";
-import { v4 as uuidv4 } from "uuid";
+import { v4 as uuidv4 } from 'uuid';
 
 const documentClient = DynamoDBDocumentClient.from(dynamoDBClient);
 
@@ -56,9 +56,9 @@ export async function PUT(req: Request) {
 
     if (VisitHistory !== undefined) {
       const structuredVisitHistory = VisitHistory.map((visit: any) => ({
-        VisitDate: visit.VisitDate,
-        Purpose: visit.Purpose,
-        VisitOutcome: visit.VisitOutcome,
+        VisitDate: visit.VisitDate || new Date().toISOString(),
+        Purpose: visit.Purpose || "Unknown",
+        VisitOutcome: visit.VisitOutcome || "Pending",
       }));
       updateExpression += " VisitHistory = :visitHistory,";
       expressionAttributeValues[":visitHistory"] = structuredVisitHistory;
@@ -77,10 +77,10 @@ export async function PUT(req: Request) {
     if (CallTranscripts !== undefined) {
       const structuredCallTranscripts = CallTranscripts.map((call: any) => ({
         CallID: call.CallID || uuidv4(),
-        Transcript: call.Transcript,
-        CallDate: call.CallDate,
-        CallOutcome: call.CallOutcome,
-        SentimentScore: call.SentimentScore,
+        Transcript: call.Transcript || "No transcript available.",
+        CallDate: call.CallDate || new Date().toISOString(),
+        CallOutcome: call.CallOutcome || "In Progress",
+        SentimentScore: call.SentimentScore || null,
       }));
       updateExpression += " CallTranscripts = :callTranscripts,";
       expressionAttributeValues[":callTranscripts"] = structuredCallTranscripts;
