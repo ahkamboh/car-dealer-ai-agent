@@ -13,19 +13,19 @@ export async function POST(req: Request) {
     const customerID = uuidv4();
     const createdAt = new Date().toISOString();
 
-    const structuredVisitHistory = VisitHistory?.map((visit: any) => ({
-      VisitDate: visit.VisitDate,
-      Purpose: visit.Purpose,
-      VisitOutcome: visit.VisitOutcome
-    })) || [];
+    const structuredVisitHistory = (VisitHistory || []).map((visit: any) => ({
+      VisitDate: visit.VisitDate || new Date().toISOString(),
+      Purpose: visit.Purpose || "Unknown",
+      VisitOutcome: visit.VisitOutcome || "Pending",
+    }));
 
-    const structuredCallTranscripts = CallTranscripts?.map((call: any) => ({
+    const structuredCallTranscripts = (CallTranscripts || []).map((call: any) => ({
       CallID: call.CallID || uuidv4(),
-      Transcript: call.Transcript,
-      CallDate: call.CallDate,
-      CallOutcome: call.CallOutcome,
-      SentimentScore: call.SentimentScore
-    })) || [];
+      Transcript: call.Transcript || "No transcript available.",
+      CallDate: call.CallDate || new Date().toISOString(),
+      CallOutcome: call.CallOutcome || "In Progress",
+      SentimentScore: call.SentimentScore || null,
+    }));
 
     const params = {
       TableName: 'PamVoiceAgent',
