@@ -8,24 +8,10 @@ const documentClient = DynamoDBDocumentClient.from(dynamoDBClient);
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { Name, Email, Password, City, ProfilePicture, VisitHistory, Feedback, Notes, CallTranscripts } = body;
+    const { Name, Email, Password, City, ProfilePicture, VisitOutcome, Purpose, Transcript, SentimentScore, CallOutcome, Feedback, Notes } = body;
 
     const customerID = uuidv4();
     const createdAt = new Date().toISOString();
-
-    const structuredVisitHistory = (VisitHistory || []).map((visit: any) => ({
-      VisitDate: visit.VisitDate || new Date().toISOString(),
-      Purpose: visit.Purpose || "Unknown",
-      VisitOutcome: visit.VisitOutcome || "Pending",
-    }));
-
-    const structuredCallTranscripts = (CallTranscripts || []).map((call: any) => ({
-      CallID: call.CallID || uuidv4(),
-      Transcript: call.Transcript || "No transcript available.",
-      CallDate: call.CallDate || new Date().toISOString(),
-      CallOutcome: call.CallOutcome || "In Progress",
-      SentimentScore: call.SentimentScore || null,
-    }));
 
     const params = {
       TableName: 'PamVoiceAgent',
@@ -38,12 +24,15 @@ export async function POST(req: Request) {
         Password,
         City,
         ProfilePicture,
-        VisitHistory: structuredVisitHistory,
-        OverallSentiment: null,
+        VisitOutcome,
+        Purpose,
+        Transcript,
+        SentimentScore,
+        CallOutcome,
         Feedback,
+        OverallSentiment: null,
         Notes,
         CreatedAt: createdAt,
-        CallTranscripts: structuredCallTranscripts,
       },
     };
 
