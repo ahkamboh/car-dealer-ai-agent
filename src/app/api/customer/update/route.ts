@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { UpdateCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import { dynamoDBClient } from "../../../../../awsConfig";
+import { v4 as uuidv4 } from "uuid";
 
 const documentClient = DynamoDBDocumentClient.from(dynamoDBClient);
 
 export async function PUT(req: Request) {
   try {
-    // Parse the CustomerID from the query parameters
     const { searchParams } = new URL(req.url);
     const CustomerID = searchParams.get("CustomerID");
 
@@ -29,7 +29,6 @@ export async function PUT(req: Request) {
       CallTranscripts,
     } = body;
 
-    // Build the UpdateExpression and ExpressionAttributeValues dynamically
     let updateExpression = "SET";
     const expressionAttributeNames: Record<string, string> = {};
     const expressionAttributeValues: Record<string, any> = {};
@@ -56,8 +55,13 @@ export async function PUT(req: Request) {
     }
 
     if (VisitHistory !== undefined) {
+      const structuredVisitHistory = VisitHistory.map((visit: any) => ({
+        VisitDate: visit.VisitDate,
+        Purpose: visit.Purpose,
+        VisitOutcome: visit.VisitOutcome,
+      }));
       updateExpression += " VisitHistory = :visitHistory,";
-      expressionAttributeValues[":visitHistory"] = VisitHistory;
+      expressionAttributeValues[":visitHistory"] = structuredVisitHistory;
     }
 
     if (Feedback !== undefined) {
@@ -71,11 +75,17 @@ export async function PUT(req: Request) {
     }
 
     if (CallTranscripts !== undefined) {
+      const structuredCallTranscripts = CallTranscripts.map((call: any) => ({
+        CallID: call.CallID || uuidv4(),
+        Transcript: call.Transcript,
+        CallDate: call.CallDate,
+        CallOutcome: call.CallOutcome,
+        SentimentScore: call.SentimentScore,
+      }));
       updateExpression += " CallTranscripts = :callTranscripts,";
-      expressionAttributeValues[":callTranscripts"] = CallTranscripts;
+      expressionAttributeValues[":callTranscripts"] = structuredCallTranscripts;
     }
 
-    // Remove the trailing comma from the UpdateExpression
     updateExpression = updateExpression.slice(0, -1);
 
     const params = {

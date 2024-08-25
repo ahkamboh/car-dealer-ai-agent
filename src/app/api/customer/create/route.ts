@@ -13,6 +13,20 @@ export async function POST(req: Request) {
     const customerID = uuidv4();
     const createdAt = new Date().toISOString();
 
+    const structuredVisitHistory = VisitHistory?.map((visit: any) => ({
+      VisitDate: visit.VisitDate,
+      Purpose: visit.Purpose,
+      VisitOutcome: visit.VisitOutcome
+    })) || [];
+
+    const structuredCallTranscripts = CallTranscripts?.map((call: any) => ({
+      CallID: call.CallID || uuidv4(),
+      Transcript: call.Transcript,
+      CallDate: call.CallDate,
+      CallOutcome: call.CallOutcome,
+      SentimentScore: call.SentimentScore
+    })) || [];
+
     const params = {
       TableName: 'PamVoiceAgent',
       Item: {
@@ -24,12 +38,12 @@ export async function POST(req: Request) {
         Password,
         City,
         ProfilePicture,
-        VisitHistory: VisitHistory || [],
+        VisitHistory: structuredVisitHistory,
         OverallSentiment: null,
         Feedback,
         Notes,
         CreatedAt: createdAt,
-        CallTranscripts: CallTranscripts || [],
+        CallTranscripts: structuredCallTranscripts,
       },
     };
 
