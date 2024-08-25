@@ -1,7 +1,10 @@
-import { NextResponse } from 'next/server';
+import { NextResponse } from "next/server";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { GetCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
-import { DetectSentimentCommand, LanguageCode } from "@aws-sdk/client-comprehend";
+import {
+  DetectSentimentCommand,
+  LanguageCode,
+} from "@aws-sdk/client-comprehend";
 import { comprehendClient } from "../../../../awsConfig";
 
 // Initialize the DynamoDB client
@@ -40,25 +43,27 @@ export async function GET(req: Request) {
 
     interface DynamoDBGetItemOutput {
       Item?: {
-        Attribute1: string;
+        Feedback: string;
       };
     }
 
-    const data = (await documentClient.send(new GetCommand(getParams))) as DynamoDBGetItemOutput;
+    const data = (await documentClient.send(
+      new GetCommand(getParams)
+    )) as DynamoDBGetItemOutput;
 
-    if (!data.Item || !data.Item.Attribute1) {
+    if (!data.Item || !data.Item.Feedback) {
       return NextResponse.json(
-        { error: "No data found or Attribute1 missing" },
+        { error: "No data found or Feedback missing" },
         { status: 404 }
       );
     }
 
-    const textToAnalyze = data.Item.Attribute1;
+    const textToAnalyze = data.Item.Feedback;
 
     // Perform sentiment analysis using AWS Comprehend
     const comprehendParams = {
       Text: textToAnalyze,
-      LanguageCode: "en" as LanguageCode, // Cast to the correct type
+      LanguageCode: "en" as LanguageCode, // Assuming the feedback is in English
     };
 
     const sentimentData = await comprehendClient.send(
