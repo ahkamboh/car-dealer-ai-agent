@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server";
 import { UpdateCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import { dynamoDBClient } from "../../../../../awsConfig";
-import { v4 as uuidv4 } from 'uuid';
 
 const documentClient = DynamoDBDocumentClient.from(dynamoDBClient);
 
 export async function PUT(req: Request) {
   try {
+    // Parse the CustomerID from the query parameters
     const { searchParams } = new URL(req.url);
     const CustomerID = searchParams.get("CustomerID");
 
@@ -23,12 +23,17 @@ export async function PUT(req: Request) {
       Email,
       City,
       ProfilePicture,
-      VisitHistory,
+      VisitOutcome,
+      Purpose,
+      Transcript,
+      SentimentScore,
+      CallOutcome,
       Feedback,
       Notes,
-      CallTranscripts,
+      OverallSentiment
     } = body;
 
+    // Build the UpdateExpression and ExpressionAttributeValues dynamically
     let updateExpression = "SET";
     const expressionAttributeNames: Record<string, string> = {};
     const expressionAttributeValues: Record<string, any> = {};
@@ -54,14 +59,29 @@ export async function PUT(req: Request) {
       expressionAttributeValues[":profilePicture"] = ProfilePicture;
     }
 
-    if (VisitHistory !== undefined) {
-      const structuredVisitHistory = VisitHistory.map((visit: any) => ({
-        VisitDate: visit.VisitDate || new Date().toISOString(),
-        Purpose: visit.Purpose || "Unknown",
-        VisitOutcome: visit.VisitOutcome || "Pending",
-      }));
-      updateExpression += " VisitHistory = :visitHistory,";
-      expressionAttributeValues[":visitHistory"] = structuredVisitHistory;
+    if (VisitOutcome !== undefined) {
+      updateExpression += " VisitOutcome = :visitOutcome,";
+      expressionAttributeValues[":visitOutcome"] = VisitOutcome;
+    }
+
+    if (Purpose !== undefined) {
+      updateExpression += " Purpose = :purpose,";
+      expressionAttributeValues[":purpose"] = Purpose;
+    }
+
+    if (Transcript !== undefined) {
+      updateExpression += " Transcript = :transcript,";
+      expressionAttributeValues[":transcript"] = Transcript;
+    }
+
+    if (SentimentScore !== undefined) {
+      updateExpression += " SentimentScore = :sentimentScore,";
+      expressionAttributeValues[":sentimentScore"] = SentimentScore;
+    }
+
+    if (CallOutcome !== undefined) {
+      updateExpression += " CallOutcome = :callOutcome,";
+      expressionAttributeValues[":callOutcome"] = CallOutcome;
     }
 
     if (Feedback !== undefined) {
@@ -74,18 +94,12 @@ export async function PUT(req: Request) {
       expressionAttributeValues[":notes"] = Notes;
     }
 
-    if (CallTranscripts !== undefined) {
-      const structuredCallTranscripts = CallTranscripts.map((call: any) => ({
-        CallID: call.CallID || uuidv4(),
-        Transcript: call.Transcript || "No transcript available.",
-        CallDate: call.CallDate || new Date().toISOString(),
-        CallOutcome: call.CallOutcome || "In Progress",
-        SentimentScore: call.SentimentScore || null,
-      }));
-      updateExpression += " CallTranscripts = :callTranscripts,";
-      expressionAttributeValues[":callTranscripts"] = structuredCallTranscripts;
+    if (OverallSentiment !== undefined) {
+      updateExpression += " OverallSentiment = :overallSentiment,";
+      expressionAttributeValues[":overallSentiment"] = OverallSentiment;
     }
 
+    // Remove the trailing comma from the UpdateExpression
     updateExpression = updateExpression.slice(0, -1);
 
     const params = {
