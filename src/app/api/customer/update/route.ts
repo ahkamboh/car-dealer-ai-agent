@@ -1,46 +1,111 @@
-import { NextResponse } from 'next/server';
-import { UpdateCommand, DynamoDBDocumentClient } from '@aws-sdk/lib-dynamodb';
-import { dynamoDBClient } from '../../../../../awsConfig';
+import { NextResponse } from "next/server";
+import { UpdateCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+import { dynamoDBClient } from "../../../../../awsConfig";
 
 const documentClient = DynamoDBDocumentClient.from(dynamoDBClient);
 
 export async function PUT(req: Request) {
   try {
-    const body = await req.json();
-    const { CustomerID, Name, Email, City, ProfilePicture, VisitHistory, Feedback, Notes, CallTranscripts } = body;
+    // Parse the CustomerID from the query parameters
+    const { searchParams } = new URL(req.url);
+    const CustomerID = searchParams.get("CustomerID");
 
     if (!CustomerID) {
-      return NextResponse.json({ error: 'CustomerID is required' }, { status: 400 });
+      return NextResponse.json(
+        { error: "CustomerID is required" },
+        { status: 400 }
+      );
     }
 
+    const body = await req.json();
+    const {
+      Name,
+      Email,
+      City,
+      ProfilePicture,
+      VisitHistory,
+      Feedback,
+      Notes,
+      CallTranscripts,
+    } = body;
+
+    // Build the UpdateExpression and ExpressionAttributeValues dynamically
+    let updateExpression = "SET";
+    const expressionAttributeNames: Record<string, string> = {};
+    const expressionAttributeValues: Record<string, any> = {};
+
+    if (Name !== undefined) {
+      updateExpression += " #name = :name,";
+      expressionAttributeNames["#name"] = "Name";
+      expressionAttributeValues[":name"] = Name;
+    }
+
+    if (Email !== undefined) {
+      updateExpression += " Email = :email,";
+      expressionAttributeValues[":email"] = Email;
+    }
+
+    if (City !== undefined) {
+      updateExpression += " City = :city,";
+      expressionAttributeValues[":city"] = City;
+    }
+
+    if (ProfilePicture !== undefined) {
+      updateExpression += " ProfilePicture = :profilePicture,";
+      expressionAttributeValues[":profilePicture"] = ProfilePicture;
+    }
+
+    if (VisitHistory !== undefined) {
+      updateExpression += " VisitHistory = :visitHistory,";
+      expressionAttributeValues[":visitHistory"] = VisitHistory;
+    }
+
+    if (Feedback !== undefined) {
+      updateExpression += " Feedback = :feedback,";
+      expressionAttributeValues[":feedback"] = Feedback;
+    }
+
+    if (Notes !== undefined) {
+      updateExpression += " Notes = :notes,";
+      expressionAttributeValues[":notes"] = Notes;
+    }
+
+    if (CallTranscripts !== undefined) {
+      updateExpression += " CallTranscripts = :callTranscripts,";
+      expressionAttributeValues[":callTranscripts"] = CallTranscripts;
+    }
+
+    // Remove the trailing comma from the UpdateExpression
+    updateExpression = updateExpression.slice(0, -1);
+
     const params = {
-      TableName: 'PamVoiceAgent',
+      TableName: "PamVoiceAgent",
       Key: {
         PK: `CUSTOMER#${CustomerID}`,
         SK: `PROFILE#${CustomerID}`,
       },
-      UpdateExpression: 'SET #name = :name, Email = :email, City = :city, ProfilePicture = :profilePicture, VisitHistory = :visitHistory, Feedback = :feedback, Notes = :notes, CallTranscripts = :callTranscripts',
-      ExpressionAttributeNames: {
-        '#name': 'Name',
-      },
-      ExpressionAttributeValues: {
-        ':name': Name,
-        ':email': Email,
-        ':city': City,
-        ':profilePicture': ProfilePicture,
-        ':visitHistory': VisitHistory || [],
-        ':feedback': Feedback,
-        ':notes': Notes,
-        ':callTranscripts': CallTranscripts || [],
-      },
-      ReturnValues: 'ALL_NEW' as const, // Ensures the type is correct
+      UpdateExpression: updateExpression,
+      ExpressionAttributeNames: Object.keys(expressionAttributeNames).length
+        ? expressionAttributeNames
+        : undefined,
+      ExpressionAttributeValues: expressionAttributeValues,
+      ReturnValues: "ALL_NEW" as const,
     };
 
     const data = await documentClient.send(new UpdateCommand(params));
 
-    return NextResponse.json({ message: 'Customer profile updated successfully', updatedAttributes: data.Attributes }, { status: 200 });
+    return NextResponse.json(
+      {
+        message: "Customer profile updated successfully",
+        updatedAttributes: data.Attributes,
+      },
+      { status: 200 }
+    );
   } catch (error) {
-    console.error('Error updating customer profile:', error);
-    return NextResponse.json({ error: 'Could not update customer profile' }, { status: 500 });
+    console.error("Error updating customer profile:", error);
+    return NextResponse.json(
+      { error: "Could not update customer profile" },
+      { status: 500 }
+    );
   }
 }
