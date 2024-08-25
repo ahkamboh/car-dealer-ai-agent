@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useRouter } from 'next/navigation'; // Import useRouter from Next.js
+import { useRouter } from 'next/navigation';
 
 export interface CustomerData {
   ProfilePicture: string;
@@ -9,25 +9,24 @@ export interface CustomerData {
   City: string;
   VisitOutcome: string;
   Purpose: string;
-  CustomerID: string; // Ensure we are using CustomerID to uniquely identify customers
+  CustomerID: string;
 }
 
 interface QueriesTableProps {
   data: CustomerData[];
-  setData: (data: CustomerData[]) => void; // A function to update the data in the parent component
+  setData: (data: CustomerData[]) => void;
 }
 
 const QueriesTable: React.FC<QueriesTableProps> = ({ data, setData }) => {
-  const router = useRouter(); // Initialize router to handle navigation
+  const router = useRouter();
 
   useEffect(() => {
-    // Fetch initial data from the new endpoint when the component mounts
     const fetchData = async () => {
       try {
-        const response = await fetch('/api/customer/readAll'); // Adjust the API endpoint
+        const response = await fetch('/api/customer/readAll');
         if (response.ok) {
           const result = await response.json();
-          setData(result.data); // Populate the table with initial data from the new endpoint
+          setData(result.data);
         } else {
           console.error('Failed to fetch data:', response.statusText);
         }
@@ -50,7 +49,6 @@ const QueriesTable: React.FC<QueriesTableProps> = ({ data, setData }) => {
       });
 
       if (response.ok) {
-        // Remove the deleted customer from the state
         setData(data.filter((item) => item.CustomerID !== customerID));
         alert('Customer profile and all associated data deleted successfully');
       } else {
@@ -64,8 +62,29 @@ const QueriesTable: React.FC<QueriesTableProps> = ({ data, setData }) => {
   };
 
   const handleMoreDetails = (customerID: string) => {
-    // Navigate to the dynamic details page for the customer
     router.push(`/customer/${customerID}`);
+  };
+
+  const handleSendEmail = async (customerID: string, email: string) => {
+    try {
+      const response = await fetch('/api/sendEmail', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userId: customerID, email }),
+      });
+
+      if (response.ok) {
+        alert('Email sent successfully!');
+      } else {
+        console.error('Failed to send email:', await response.text());
+        alert('Failed to send email');
+      }
+    } catch (error) {
+      console.error('Error sending email:', error);
+      alert('Error sending email');
+    }
   };
 
   return (
@@ -110,6 +129,12 @@ const QueriesTable: React.FC<QueriesTableProps> = ({ data, setData }) => {
                   >
                     Delete
                   </button>
+                  <button
+                    className="px-3 py-2 text-green-500 hover:bg-[#5c5a5acb] transition-colors duration-200 border border-[#5c5a5acb] rounded"
+                    onClick={() => handleSendEmail(item.CustomerID, item.Email)}
+                  >
+                    Send Email
+                  </button>
                 </td>
               </tr>
             ))}
@@ -143,6 +168,12 @@ const QueriesTable: React.FC<QueriesTableProps> = ({ data, setData }) => {
                   onClick={() => handleDelete(item.CustomerID)}
                 >
                   Delete
+                </button>
+                <button
+                  className="px-3 py-2 text-green-500 hover:bg-[#5c5a5acb] transition-colors duration-200 border border-[#5c5a5acb] rounded w-full"
+                  onClick={() => handleSendEmail(item.CustomerID, item.Email)}
+                >
+                  Send Email
                 </button>
               </div>
             </div>
