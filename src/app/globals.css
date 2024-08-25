@@ -136,3 +136,7 @@ body {
 .ClashDisplay-Bold {
   font-family: 'ClashDisplay-Bold', sans-serif;
 }
+
+.cl-internal-1dauvpw, .cl-internal-1hp5nqm {
+  display: none;
+}

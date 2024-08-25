@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import Sidebar from "../components/Dashboard/Sidebar";
 import Navbar from "../components/Dashboard/Navbar";
 import BreadcrumbNavigation from "../components/Dashboard/BreadcrumbNavigation";
-import QueriesCards from "../components/Dashboard/QueriesCards";
+ {/* @ts-ignore */}
 import QueriesForm, { QueryData } from "../components/Dashboard/QueriesForm";
 import QueriesTable from "../components/Dashboard/QueriesTable";
 

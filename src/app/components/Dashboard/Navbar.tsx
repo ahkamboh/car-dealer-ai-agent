@@ -46,12 +46,15 @@ const Navbar: React.FC<NavbarProps> = ({
         </div>
         <div className="text-white flex items-center gap-3 plus-jakarta-sans-400">
           {/* Display the image passed in the `url` prop */}
-          <SignedOut>
-            <SignInButton />
-          </SignedOut>
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
+          <UserButton
+              afterSignOutUrl="/"
+              appearance={{
+                elements: {
+                  userButtonAvatarBox: "w-8 h-8", // Smaller avatar size
+                  userButtonPopoverCard: "bg-white shadow-lg", // Card styling
+                },
+              }}
+            />
         </div>
       </div>
     </div>
