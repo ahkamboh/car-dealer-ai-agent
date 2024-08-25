@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useRouter } from 'next/navigation'; // Import useRouter from Next.js
 
 export interface CustomerData {
   ProfilePicture: string;
@@ -8,16 +9,17 @@ export interface CustomerData {
   City: string;
   VisitOutcome: string;
   Purpose: string;
-  CustomerID: string;  // Ensure we are using CustomerID to uniquely identify customers
+  CustomerID: string; // Ensure we are using CustomerID to uniquely identify customers
 }
 
 interface QueriesTableProps {
   data: CustomerData[];
   setData: (data: CustomerData[]) => void; // A function to update the data in the parent component
-  onEditQuery: (query: CustomerData) => void; // Function to trigger the edit mode
 }
 
-const QueriesTable: React.FC<QueriesTableProps> = ({ data, setData, onEditQuery }) => {
+const QueriesTable: React.FC<QueriesTableProps> = ({ data, setData }) => {
+  const router = useRouter(); // Initialize router to handle navigation
+
   useEffect(() => {
     // Fetch initial data from the new endpoint when the component mounts
     const fetchData = async () => {
@@ -61,11 +63,16 @@ const QueriesTable: React.FC<QueriesTableProps> = ({ data, setData, onEditQuery 
     }
   };
 
+  const handleMoreDetails = (customerID: string) => {
+    // Navigate to the dynamic details page for the customer
+    router.push(`/customer/${customerID}`);
+  };
+
   return (
     <div className="w-full">
       <h1 className="text-2xl font-bold mb-4 text-white">Customer Data</h1>
       <div className="overflow-x-auto hidden lg:block border rounded-md border-[#5c5a5acb]">
-        <table className="min-w-full bg-[#261e35]] text-white">
+        <table className="min-w-full bg-[#261e35] text-white">
           <thead className="bg-[#5c5a5a3f]">
             <tr>
               <th className="text-center py-3 px-1.5">Profile Picture</th>
@@ -93,9 +100,9 @@ const QueriesTable: React.FC<QueriesTableProps> = ({ data, setData, onEditQuery 
                 <td className="text-center py-3 px-1.5 flex gap-2 justify-center">
                   <button
                     className="px-3 py-2 text-[#0D99FF] hover:bg-[#5c5a5acb] transition-colors duration-200 border border-[#5c5a5acb] rounded"
-                    onClick={() => onEditQuery(item)}
+                    onClick={() => handleMoreDetails(item.CustomerID)}
                   >
-                    Edit
+                    More Details
                   </button>
                   <button
                     className="px-3 py-2 text-red-500 hover:bg-[#5c5a5acb] transition-colors duration-200 border border-[#5c5a5acb] rounded"
@@ -122,14 +129,14 @@ const QueriesTable: React.FC<QueriesTableProps> = ({ data, setData, onEditQuery 
               <div><strong>Email:</strong> {item.Email}</div>
               <div><strong>Password:</strong> {item.Password}</div>
               <div><strong>City:</strong> {item.City}</div>
-              <td className="text-center py-3 px-1.5">{item.VisitOutcome}</td>
-              <td className="text-center py-3 px-1.5">{item.Purpose}</td>
+              <div><strong>Visit Outcome:</strong> {item.VisitOutcome}</div>
+              <div><strong>Purpose:</strong> {item.Purpose}</div>
               <div className="flex gap-2 justify-center">
                 <button
                   className="px-3 py-2 text-[#0D99FF] hover:bg-[#5c5a5acb] transition-colors duration-200 border border-[#5c5a5acb] rounded w-full"
-                  onClick={() => onEditQuery(item)}
+                  onClick={() => handleMoreDetails(item.CustomerID)}
                 >
-                  Edit
+                  More Details
                 </button>
                 <button
                   className="px-3 py-2 text-red-500 hover:bg-[#5c5a5acb] transition-colors duration-200 border border-[#5c5a5acb] rounded w-full"
