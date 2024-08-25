@@ -4,6 +4,7 @@ import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import AnimatedGradientText from "@/components/magicui/animated-gradient-text";
 import SparklesText from '@/components/magicui/sparkles-text';
+import { SignInButton } from '@clerk/nextjs';
 const LazySpline = lazy(() => import('@splinetool/react-spline'));
 interface SplineInstance {
   setVariable: (variable: string, value: number) => void;
@@ -66,12 +67,18 @@ const Spline3D: React.FC = () => {
           <img src="/logo.svg" alt="" />
         </div>
         <div className="flex h-full justify-center items-center gap-2">
-          <button
-            type="button"
-            className="text-white bg-gradient-to-br from-[#b783eb] to-[#e81a9d] hover:bg-gradient-to-tr font-medium rounded-full text-sm px-5 py-2.5 text-center"
+
+          <SignInButton
+            fallbackRedirectUrl="/dashboard"
+            signUpFallbackRedirectUrl="/onboarding"
           >
-            Get Started
-          </button>
+            <button
+              type="button"
+              className="text-white bg-gradient-to-br from-[#b783eb] to-[#e81a9d] hover:bg-gradient-to-tr font-medium rounded-full text-sm px-5 py-2.5 text-center"
+            >
+              Get Started
+            </button>
+          </SignInButton>
         </div>
       </nav>
       <Suspense fallback={<div className="w-full h-full flex items-center justify-center">Loading 3D model...</div>}>

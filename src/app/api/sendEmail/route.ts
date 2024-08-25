@@ -4,39 +4,36 @@ import nodemailer from "nodemailer";
 
 export async function POST(req: Request) {
   try {
-    const { email, userId } = await req.json();
+    const { email, userId, password } = await req.json(); // Receive email, userId, and password from the request body
 
-    // Create a test account using Ethereal Email
-    const testAccount = await nodemailer.createTestAccount();
-
-    // Create a transporter using the Ethereal SMTP configuration
+    // Configure the transporter using your SMTP settings
     const transporter = nodemailer.createTransport({
-      host: "smtp.ethereal.email",
-      port: 587,
-      secure: false, // true for 465, false for other ports
+      host: process.env.SMTP_HOST,
+      port: Number(process.env.SMTP_PORT),
+      secure: false, // True for 465, false for other ports
       auth: {
-        user: testAccount.user, // generated ethereal user
-        pass: testAccount.pass, // generated ethereal password
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
       },
     });
 
+    // Create a dynamic link with the CustomerID for profile update
+    const dynamicLink = `https://car-ai-agent.vercel.app/user/${userId}/`
+
     // Set up the email options
     const mailOptions = {
-      from: testAccount.user, // Sender address
+      from: process.env.SMTP_USER, // Sender address
       to: email, // Recipient's email address
-      subject: "Sign In to Update Your Profile", // Subject line
-      text: `Please sign in using the following link: https://your-domain.com/signin?userId=${userId}`, // Plain text body
+      subject: "Sign In to Update Your Profile and Submit Feedback", // Subject line
+      text: `Please sign in using the following link to update your profile and submit feedback: ${dynamicLink}\n\nYour password: ${password}`, // Plain text body with sign-in URL and password
     };
 
     // Send the email
     const info = await transporter.sendMail(mailOptions);
 
-    // Log the preview URL for testing purposes
-    console.log("Preview URL:", nodemailer.getTestMessageUrl(info));
-
     return NextResponse.json({
       message: "Email sent successfully",
-      previewURL: nodemailer.getTestMessageUrl(info), // Provide a preview URL in the response
+      previewURL: nodemailer.getTestMessageUrl(info),
     });
   } catch (error) {
     console.error("Error sending email:", error);

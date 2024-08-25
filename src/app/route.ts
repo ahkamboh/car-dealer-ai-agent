@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { UpdateCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
-import { dynamoDBClient } from "../../../../../awsConfig";
+import { dynamoDBClient } from "../../awsConfig";
 
 const documentClient = DynamoDBDocumentClient.from(dynamoDBClient);
 

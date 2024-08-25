@@ -1,7 +1,8 @@
-import React, { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { ReactNode, useEffect } from 'react';
+import { useRouter } from 'next/navigation'; // Import useRouter from Next.js
 
 export interface CustomerData {
+  CallOutcome: ReactNode;
   ProfilePicture: string;
   Name: string;
   Email: string;
@@ -65,14 +66,14 @@ const QueriesTable: React.FC<QueriesTableProps> = ({ data, setData }) => {
     router.push(`/customer/${customerID}`);
   };
 
-  const handleSendEmail = async (customerID: string, email: string) => {
+  const handleSendEmail = async (customerID: string, email: string, password: string) => {
     try {
       const response = await fetch('/api/sendEmail', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ userId: customerID, email }),
+        body: JSON.stringify({ userId: customerID, email, password }),
       });
 
       if (response.ok) {
@@ -100,6 +101,7 @@ const QueriesTable: React.FC<QueriesTableProps> = ({ data, setData }) => {
               <th className="text-center py-3 px-1.5">Password</th>
               <th className="text-center py-3 px-1.5">City</th>
               <th className="text-center py-3 px-1.5">Visit Outcome</th>
+              <th className="text-center py-3 px-1.5">Call Outcome</th>
               <th className="text-center py-3 px-1.5">Purpose</th>
               <th className="text-center py-3 px-1.5">Actions</th>
             </tr>
@@ -112,9 +114,10 @@ const QueriesTable: React.FC<QueriesTableProps> = ({ data, setData }) => {
                 </td>
                 <td className="text-center py-3 px-1.5">{item.Name}</td>
                 <td className="text-center py-3 px-1.5">{item.Email}</td>
-                <td className="text-center py-3 px-1.5">{item.Password}</td>
+                <td className="text-center py-3 px-1.5">●●●●●●●●●●●●</td>
                 <td className="text-center py-3 px-1.5">{item.City}</td>
                 <td className="text-center py-3 px-1.5">{item.VisitOutcome}</td>
+                <td className="text-center py-3 px-1.5">{item.CallOutcome}</td>
                 <td className="text-center py-3 px-1.5">{item.Purpose}</td>
                 <td className="text-center py-3 px-1.5 flex gap-2 justify-center">
                   <button
@@ -131,7 +134,7 @@ const QueriesTable: React.FC<QueriesTableProps> = ({ data, setData }) => {
                   </button>
                   <button
                     className="px-3 py-2 text-green-500 hover:bg-[#5c5a5acb] transition-colors duration-200 border border-[#5c5a5acb] rounded"
-                    onClick={() => handleSendEmail(item.CustomerID, item.Email)}
+                    onClick={() => handleSendEmail(item.CustomerID, item.Email, item.Password)}
                   >
                     Send Email
                   </button>
@@ -155,6 +158,7 @@ const QueriesTable: React.FC<QueriesTableProps> = ({ data, setData }) => {
               <div><strong>Password:</strong> {item.Password}</div>
               <div><strong>City:</strong> {item.City}</div>
               <div><strong>Visit Outcome:</strong> {item.VisitOutcome}</div>
+              <div><strong>Call Outcome:</strong> {item.CallOutcome}</div>
               <div><strong>Purpose:</strong> {item.Purpose}</div>
               <div className="flex gap-2 justify-center">
                 <button
@@ -171,7 +175,7 @@ const QueriesTable: React.FC<QueriesTableProps> = ({ data, setData }) => {
                 </button>
                 <button
                   className="px-3 py-2 text-green-500 hover:bg-[#5c5a5acb] transition-colors duration-200 border border-[#5c5a5acb] rounded w-full"
-                  onClick={() => handleSendEmail(item.CustomerID, item.Email)}
+                  onClick={() => handleSendEmail(item.CustomerID, item.Email, item.Password)}
                 >
                   Send Email
                 </button>

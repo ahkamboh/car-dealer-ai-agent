@@ -11,7 +11,7 @@ export interface CustomerData {
   City?: string; // Optional field
   VisitOutcome?: string; // Optional field
   Purpose?: string; // Optional field
-  CallOutcome: string; // New field included with default empty value
+  CallOutcome?: string; // Optional field
   SentimentScore: number; // New field included with default value
   Transcript: string; // New field included with default empty value
   Feedback: string; // New field included with default empty value
@@ -40,7 +40,7 @@ const CustomerForm: React.FC<FormProps> = ({ onSubmit, onCancel, initialData }) 
     City: '', // Optional field
     VisitOutcome: '', // Optional field
     Purpose: '', // Optional field
-    CallOutcome: '', // Default empty value
+    CallOutcome: '', // Default empty value for optional field
     SentimentScore: 0.0, // Initialize as 0.0, representing neutral sentiment
     Transcript: '', // Initialize as an empty string
     Feedback: '', // Initialize as an empty string
@@ -54,11 +54,11 @@ const CustomerForm: React.FC<FormProps> = ({ onSubmit, onCancel, initialData }) 
     if (initialData) {
       setFormData({
         ...initialData,
-        CallOutcome: '', // Default empty value
-        SentimentScore: 0.0, // Initialize as 0.0
-        Transcript: '', // Initialize as an empty string
-        Feedback: '', // Initialize as an empty string
-        Notes: '', // Initialize as an empty string
+        CallOutcome: initialData.CallOutcome || '', // Default to empty string if not provided
+        SentimentScore: initialData.SentimentScore || 0.0, // Initialize as 0.0
+        Transcript: initialData.Transcript || '', // Initialize as an empty string
+        Feedback: initialData.Feedback || '', // Initialize as an empty string
+        Notes: initialData.Notes || '', // Initialize as an empty string
       });
     }
   }, [initialData]);
@@ -84,6 +84,7 @@ const CustomerForm: React.FC<FormProps> = ({ onSubmit, onCancel, initialData }) 
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+     {/* @ts-ignore */}
     const { name, value, type, files } = e.target;
 
     if (type === 'file' && files && files[0]) {
@@ -169,7 +170,7 @@ const CustomerForm: React.FC<FormProps> = ({ onSubmit, onCancel, initialData }) 
   };
 
   return (
-    <div className='max-w-2xl space-y-4 w-full text-white p-4 bg-[#242424] border rounded-md border-[#5c5a5acb]'>
+    <div className='max-w-2xl space-y-4 w-full text-white p-4 bg-[#342d3e] border rounded-md border-[#5c5a5acb]'>
       <ToastContainer />
       <form onSubmit={handleSubmit} autoComplete='off'>
         <div className="grid grid-cols-2 gap-4">
@@ -183,7 +184,7 @@ const CustomerForm: React.FC<FormProps> = ({ onSubmit, onCancel, initialData }) 
               name="ProfilePicture"
               accept="image/*"
               onChange={handleChange}
-              className="w-full p-2 bg-[#5c5a5a6f] border rounded-md border-[#5c5a5acb]"
+              className="w-full p-2 bg-[#342d3e] border rounded-md border-[#5c5a5acb]"
             />
           </div>
           <div>
@@ -196,7 +197,7 @@ const CustomerForm: React.FC<FormProps> = ({ onSubmit, onCancel, initialData }) 
               name="Name"
               value={formData.Name}
               onChange={handleChange}
-              className={`w-full p-2 bg-[#5c5a5a6f] border rounded-md border-[#5c5a5acb] ${
+              className={`w-full p-2 bg-[#342d3e] border rounded-md border-[#5c5a5acb] ${
                 errors.Name ? 'border-red-500' : ''
               }`}
             />
@@ -212,7 +213,7 @@ const CustomerForm: React.FC<FormProps> = ({ onSubmit, onCancel, initialData }) 
               name="Email"
               value={formData.Email}
               onChange={handleChange}
-              className={`w-full p-2 bg-[#5c5a5a6f] border rounded-md border-[#5c5a5acb] ${
+              className={`w-full p-2 bg-[#342d3e] border rounded-md border-[#5c5a5acb] ${
                 errors.Email ? 'border-red-500' : ''
               }`}
             />
@@ -228,7 +229,7 @@ const CustomerForm: React.FC<FormProps> = ({ onSubmit, onCancel, initialData }) 
               name="Password"
               value={formData.Password}
               onChange={handleChange}
-              className={`w-full p-2 bg-[#5c5a5a6f] border rounded-md border-[#5c5a5acb] ${
+              className={`w-full p-2 bg-[#342d3e] border rounded-md border-[#5c5a5acb] ${
                 errors.Password ? 'border-red-500' : ''
               }`}
             />
@@ -244,7 +245,7 @@ const CustomerForm: React.FC<FormProps> = ({ onSubmit, onCancel, initialData }) 
               name="City"
               value={formData.City}
               onChange={handleChange}
-              className="w-full p-2 bg-[#5c5a5a6f] border rounded-md border-[#5c5a5acb]"
+              className="w-full p-2 bg-[#342d3e] border rounded-md border-[#5c5a5acb]"
             />
           </div>
           <div>
@@ -257,7 +258,7 @@ const CustomerForm: React.FC<FormProps> = ({ onSubmit, onCancel, initialData }) 
               name="VisitOutcome"
               value={formData.VisitOutcome}
               onChange={handleChange}
-              className="w-full p-2 bg-[#5c5a5a6f] border rounded-md border-[#5c5a5acb]"
+              className="w-full p-2 bg-[#342d3e] border rounded-md border-[#5c5a5acb]"
             />
           </div>
           <div>
@@ -270,21 +271,34 @@ const CustomerForm: React.FC<FormProps> = ({ onSubmit, onCancel, initialData }) 
               name="Purpose"
               value={formData.Purpose}
               onChange={handleChange}
-              className="w-full p-2 bg-[#5c5a5a6f] border rounded-md border-[#5c5a5acb]"
+              className="w-full p-2 bg-[#342d3e] border rounded-md border-[#5c5a5acb]"
+            />
+          </div>
+          <div>
+            <label htmlFor="CallOutcome" className="block text-white">
+              Call Outcome (optional)
+            </label>
+            <input
+              type="text"
+              id="CallOutcome"
+              name="CallOutcome"
+              value={formData.CallOutcome}
+              onChange={handleChange}
+              className="w-full p-2 bg-[#342d3e] border rounded-md border-[#5c5a5acb]"
             />
           </div>
         </div>
         <div className="flex justify-between mt-4 gap-2">
           <button
             type="submit"
-            className="px-4 py-2 hover:bg-[#0D99FF] bg-[#0d9affb1] transition-colors duration-200 w-full text-white rounded-md"
+            className="px-4 py-2 bg-gradient-to-br from-purple-700 to-pink-600  hover:bg-gradient-to-tr transition-colors duration-200 w-full text-white rounded-md"
           >
             Submit
           </button>
           <button
             type="button"
             onClick={onCancel}
-            className="px-4 py-2 hover:bg-[#5c5a5acb] bg-[#5c5a5a6f] transition-colors duration-200 border border-[#5c5a5acb] text-white rounded-md"
+            className="px-4 py-2 hover:bg-[#6f4e9d] bg-[#342d3e] transition-colors duration-200 border border-[#5c5a5acb] text-white rounded-md"
           >
             Cancel
           </button>

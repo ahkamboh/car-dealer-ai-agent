@@ -332,6 +332,14 @@ function AnalyticalArea() {
           <BarCharts />
         </div>
       </div>
+      <div className="mt-5 flex gap-5 h-80">
+      <div className="w-full bg-[#3c354a] border rounded-md border-[#5c5a5acb] p-3">
+          <LineChars />
+        </div>
+
+      </div>
+
+
     </div>
   );
 }

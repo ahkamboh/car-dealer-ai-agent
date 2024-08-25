@@ -27,7 +27,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen }) => {
     : [
       // Menu items when it's not an agent route
       { name: 'Dashboard', icon: 'home', href: '/dashboard' },
-      { name: 'Agent', icon: 'users', href: '/access' },
+      { name: 'Agent', icon: 'users', href: '/allcustomer' },
       { name: 'Query', icon: 'edit', href: '/query' },
     ];
 

@@ -1,3 +1,4 @@
+// src/app/api/sentimentAnalysis/route.ts
 import { NextResponse } from "next/server";
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { GetCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
@@ -23,6 +24,10 @@ export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const PK = searchParams.get("PK");
   const SK = searchParams.get("SK");
+
+  // Debugging log
+  console.log("Received PK:", PK);
+  console.log("Received SK:", SK);
 
   if (!PK || !SK) {
     return NextResponse.json(

@@ -1,7 +1,20 @@
 "use client";
+import BreadcrumbNavigation from "@/app/components/Dashboard/BreadcrumbNavigation";
+import Navbar from "@/app/components/Dashboard/Navbar";
+import Sidebar from "@/app/components/Dashboard/Sidebar";
 import { useParams } from "next/navigation";
+{/* @ts-ignore */}
+import QueriesForm, { QueryData } from "../../components/Dashboard/QueriesForm";
 import React, { useEffect, useState } from "react";
 
+// Define the BreadcrumbLink type
+interface BreadcrumbLink {
+  name: string;
+  href: string;
+  label: string;
+}
+
+// Define the CustomerData interface
 interface CustomerData {
   ProfilePicture: string;
   Name: string;
@@ -11,7 +24,7 @@ interface CustomerData {
   VisitOutcome: string;
   Purpose: string;
   CallOutcome: string;
-  SentimentScore: number;
+  SentimentScore: string;
   Transcript: string;
   Feedback: string;
   Notes: string;
@@ -19,27 +32,53 @@ interface CustomerData {
 }
 
 const CustomerDetails: React.FC = () => {
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isFormVisible, setIsFormVisible] = useState<boolean>(false);
+  const [queryData, setQueryData] = useState<QueryData[]>([]);
+  const [editQuery, setEditQuery] = useState<QueryData | null>(null);
+
+  const toggleSidebar = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
+  const handleAddQuery = (newQuery: QueryData) => {
+    if (editQuery) {
+      setQueryData((prevData) =>
+        prevData.map((query) => (query.queryId === newQuery.queryId ? newQuery : query))
+      );
+      setEditQuery(null);
+    } else {
+      setQueryData((prevData) => [...prevData, newQuery]);
+    }
+    setIsFormVisible(false);
+  };
+
+  const handleEditQuery = (query: QueryData) => {
+    setEditQuery(query);
+    setIsFormVisible(true);
+  };
+
+  const handleCancel = () => {
+    setEditQuery(null);
+    setIsFormVisible(false);
+  };
+
   const params = useParams();
   const { CustomerID } = params;
   const [customer, setCustomer] = useState<CustomerData | null>(null);
-  const [feedback, setFeedback] = useState(""); // New state for feedback
-  const [sentimentResult, setSentimentResult] = useState<string | null>(null); // New state for sentiment result
+  const [feedback, setFeedback] = useState("");
+  const [sentimentResult, setSentimentResult] = useState<string | null>(null);
 
   useEffect(() => {
     if (CustomerID) {
       const fetchCustomer = async () => {
         try {
-          const response = await fetch(
-            `/api/customer/read?CustomerID=${CustomerID}`
-          );
+          const response = await fetch(`/api/customer/read?CustomerID=${CustomerID}`);
           if (response.ok) {
             const result = await response.json();
             setCustomer(result);
           } else {
-            console.error(
-              "Failed to fetch customer details:",
-              response.statusText
-            );
+            console.error("Failed to fetch customer details:", response.statusText);
           }
         } catch (error) {
           console.error("Error fetching customer details:", error);
@@ -64,36 +103,26 @@ const CustomerDetails: React.FC = () => {
     }
 
     try {
-      // Update the customer with the feedback
-      const updateResponse = await fetch(
-        `/api/customer/update?CustomerID=${CustomerID}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            Feedback: feedback,
-          }),
-        }
-      );
+      const updateResponse = await fetch(`/api/customer/update?CustomerID=${CustomerID}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          Feedback: feedback,
+        }),
+      });
 
       if (!updateResponse.ok) {
-        console.error(
-          "Failed to update customer feedback:",
-          updateResponse.statusText
-        );
+        console.error("Failed to update customer feedback:", updateResponse.statusText);
         return;
       }
 
-      // Perform sentiment analysis on the updated feedback
       const PK = `CUSTOMER#${CustomerID}`;
       const SK = `PROFILE#${CustomerID}`;
 
       const sentimentResponse = await fetch(
-        `/api/sentimentAnalysis?PK=${encodeURIComponent(
-          PK
-        )}&SK=${encodeURIComponent(SK)}`,
+        `/api/sentimentAnalysis?PK=${encodeURIComponent(PK)}&SK=${encodeURIComponent(SK)}`,
         {
           method: "GET",
         }
@@ -102,7 +131,6 @@ const CustomerDetails: React.FC = () => {
       if (sentimentResponse.ok) {
         const result = await sentimentResponse.json();
 
-        // Save the sentiment as SentimentScore
         const saveSentimentResponse = await fetch(
           `/api/customer/update?CustomerID=${CustomerID}`,
           {
@@ -117,104 +145,86 @@ const CustomerDetails: React.FC = () => {
         );
 
         if (!saveSentimentResponse.ok) {
-          console.error(
-            "Failed to save sentiment score:",
-            saveSentimentResponse.statusText
-          );
+          console.error("Failed to save sentiment score:", saveSentimentResponse.statusText);
           return;
         }
 
         setSentimentResult(result.sentiment);
       } else {
-        console.error(
-          "Failed to perform sentiment analysis:",
-          sentimentResponse.statusText
-        );
+        console.error("Failed to perform sentiment analysis:", sentimentResponse.statusText);
       }
     } catch (error) {
       console.error("Error performing sentiment analysis:", error);
     }
   };
 
-  if (!customer) {
-    return <p>Loading customer details...</p>;
-  }
+  // Generate breadcrumb links dynamically
+  const breadcrumbLinks: BreadcrumbLink[] = [
+    { name: "", href: `/customer/${CustomerID}`, label: customer ? customer.Name : "" },
+  ];
 
   return (
-    <div className="max-w-2xl mx-auto p-4 bg-black shadow-md rounded-md mt-4">
-      <h1 className="text-2xl font-bold mb-4">Customer Details</h1>
-      <div className="flex flex-col items-center">
-        {customer.ProfilePicture && (
-          <img
-            src={customer.ProfilePicture}
-            alt={customer.Name}
-            className="w-32 h-32 rounded-full mb-4"
-          />
-        )}
-        <p>
-          <strong>Name:</strong> {customer.Name}
-        </p>
-        <p>
-          <strong>Email:</strong> {customer.Email}
-        </p>
-        <p>
-          <strong>Password:</strong> {customer.Password}
-        </p>
-        <p>
-          <strong>City:</strong> {customer.City}
-        </p>
-        <p>
-          <strong>Visit Outcome:</strong> {customer.VisitOutcome}
-        </p>
-        <p>
-          <strong>Purpose:</strong> {customer.Purpose}
-        </p>
-        <p>
-          <strong>Call Outcome:</strong> {customer.CallOutcome}
-        </p>
-        <p>
-          <strong>Sentiment Score:</strong> {customer.SentimentScore}
-        </p>
-        <p>
-          <strong>Transcript:</strong> {customer.Transcript}
-        </p>
-        <p>
-          <strong>Feedback:</strong> {customer.Feedback}
-        </p>
-        <p>
-          <strong>Notes:</strong> {customer.Notes}
-        </p>
-      </div>
+    <div className="flex relative">
+      <Sidebar sidebarOpen={sidebarOpen} />
+      <div className="flex-grow bg-[#261e35] transition-all duration-300">
+        <Navbar
+          sidebarOpen={sidebarOpen}
+          toggleSidebar={toggleSidebar}
+          userRole={"admin"}
+          logoutUrl={"/signin"}
+          url={""}
+        />
+        <div className="w-full bg-[#261e35] text-white flex gap-2 items-center h-10 border-b border-[#5c5a5acb]">
+          <BreadcrumbNavigation currentPage="Home" breadcrumbLinks={breadcrumbLinks} />
+        </div>
+        <div className="w-full h-full bg-[#261e35] overflow-y-auto p-5" style={{ height: "calc(100vh - 6rem)" }}>
+          <div className="bg-gradient-to-br from-purple-700 to-pink-600 rounded-3xl text-white relative overflow-hidden ">
+            <div className="flex justify-between items-center">
+              <div className="relative z-10 max-w-[50%] p-5">
+                <p className="text-sm uppercase mb-2"></p>
+                {customer && customer.ProfilePicture ? (
+                  <div className="h-32 w-32 overflow-hidden rounded-full border-4 border-white mb-4">
+                    <img
+                      src={customer.ProfilePicture}
+                      alt={customer.Name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="h-32 w-32 bg-gray-300 rounded-full flex items-center justify-center text-gray-700 mb-4">
+                    No Image
+                  </div>
+                )}
+                {customer && (
+                  <>
+                    <h1 className="text-4xl font-bold  ClashDisplay-Bold mb-4">{customer.Name}</h1>
+                    <p className="mb-6 poppins-light">
+                      Email: {customer.Email}
+                      <br />
+                      Password: {customer.Password}
+                      <br />
+                      City: {customer.City}
+                      <br />
+                      Visit Outcome: {customer.VisitOutcome}
+                      <br />
+                      Purpose: {customer.Purpose}
+                      <br />
+                      Call Outcome: {customer.CallOutcome}
+                      <br />
+                      Sentiment Score: {customer.SentimentScore}
+                      <br />
+                      feedback: {customer.Feedback}
+                    </p>
+                  </>
+                )}
+              </div>
 
-      <div className="mt-8 w-full">
-        <h2 className="text-xl font-semibold mb-2">Submit Feedback</h2>
-        <form
-          onSubmit={handleFeedbackSubmit}
-          className="flex flex-col items-center"
-        >
-          <textarea
-            className="w-full p-2 border rounded-md mb-4 text-black"
-            rows={4}
-            placeholder="Enter your feedback here..."
-            value={feedback}
-            onChange={(e) => setFeedback(e.target.value)}
-          ></textarea>
-          <button
-            type="submit"
-            className="text-white bg-gradient-to-br from-[#b783eb] to-[#e81a9d] hover:bg-gradient-to-tr font-medium rounded-full text-sm px-5 py-2.5 text-center"
-          >
-            Submit Feedback
-          </button>
-        </form>
-
-        {sentimentResult && (
-          <div className="mt-4 p-4 bg-gray-100 rounded-md shadow-md w-full">
-            <h3 className="text-lg font-semibold">
-              Sentiment Analysis Result:
-            </h3>
-            <p className="mt-2 text-sm text-gray-700">{sentimentResult}</p>
+              <div className="relative z-10 w-1/2 h-[300px] flex flex-col items-center justify-center">
+                <img src="/card.svg" alt="Card" className="w-full object-contain" />
+              </div>
+            </div>
           </div>
-        )}
+        </div>
       </div>
     </div>
   );
