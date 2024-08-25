@@ -1,47 +1,54 @@
-import { BarChart } from '@tremor/react';
-
-const chartdata = [
-  {
-    name: 'Amphibians',
-    'Number of threatened species': 2488,
-  },
-  {
-    name: 'Birds',
-    'Number of threatened species': 1445,
-  },
-  {
-    name: 'Crustaceans',
-    'Number of threatened species': 743,
-  },
-  {
-    name: 'Ferns',
-    'Number of threatened species': 281,
-  },
-  {
-    name: 'Arachnids',
-    'Number of threatened species': 251,
-  },
-  {
-    name: 'Corals',
-    'Number of threatened species': 232,
-  },
-  {
-    name: 'Algae',
-    'Number of threatened species': 98,
-  },
-];
+import React, { useEffect, useState } from "react";
+import { BarChart } from "@tremor/react";
 
 const dataFormatter = (number: number) =>
-  Intl.NumberFormat('us').format(number).toString();
+  Intl.NumberFormat("us").format(number).toString();
 
-export const BarCharts = () => (
-  <BarChart
-    data={chartdata}
-    index="name"
-    categories={['Number of threatened species']}
-    colors={['blue']}
-    valueFormatter={dataFormatter}
-    yAxisWidth={48}
-    onValueChange={(v) => console.log(v)}
-  />
-);
+export const BarCharts = () => {
+  const [chartData, setChartData] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchSentimentData = async () => {
+      try {
+        const response = await fetch("/api/dashboard/sentimentGraph");
+        if (response.ok) {
+          const result = await response.json();
+          setChartData([
+            {
+              name: "Positive",
+              "Sentiment Count": result.sentimentCounts.Positive,
+            },
+            {
+              name: "Negative",
+              "Sentiment Count": result.sentimentCounts.Negative,
+            },
+            {
+              name: "Neutral",
+              "Sentiment Count": result.sentimentCounts.Neutral,
+            },
+          ]);
+        } else {
+          console.error(
+            "Failed to fetch sentiment analysis summary:",
+            response.statusText
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching sentiment analysis summary:", error);
+      }
+    };
+
+    fetchSentimentData();
+  }, []);
+
+  return (
+    <BarChart
+      data={chartData}
+      index="name"
+      categories={["Sentiment Count"]}
+      colors={["purple"]}
+      valueFormatter={dataFormatter}
+      yAxisWidth={48}
+    />
+  );
+};
