@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useForm, FormProvider } from "react-hook-form";
-import { Input } from "@/components/ui/input";
+import { useForm, FormProvider } from "react-hook-form"
 import { useRouter, useParams } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -38,7 +37,7 @@ const EditProfilePage: React.FC = () => {
             const errorText = await response.text();
             toast.error(`Failed to fetch customer data: ${errorText}`);
           }
-        } catch (error) {
+        } catch (error:any) {
           toast.error(`Error fetching customer data: ${error.message}`);
         }
       };
@@ -84,6 +83,7 @@ const EditProfilePage: React.FC = () => {
       }
 
       // Step 2: Call the sentiment analysis endpoint
+       {/* @ts-ignore */}
       const sentimentResponse = await fetch(
         `/api/sentimentAnalysis?PK=CUSTOMER%23${encodeURIComponent(CustomerID)}&SK=PROFILE%23${encodeURIComponent(CustomerID)}`
       );
@@ -129,7 +129,7 @@ const EditProfilePage: React.FC = () => {
           <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
             <div>
               <label htmlFor="Email">Email</label>
-              <Input
+              <input
                 type="email"
                 id="Email"
                 {...register("Email")}
@@ -139,7 +139,7 @@ const EditProfilePage: React.FC = () => {
             </div>
             <div>
               <label htmlFor="ProfilePicture">Profile Picture</label>
-              <Input
+              <input
                 type="file"
                 id="ProfilePicture"
                 onChange={handleImageChange} // Use custom handler for image change
