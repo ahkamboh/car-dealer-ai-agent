@@ -39,7 +39,7 @@ const EditProfilePage: React.FC = () => {
             const errorText = await response.text();
             toast.error(`Failed to fetch customer data: ${errorText}`);
           }
-        } catch (error:any) {
+        } catch (error: any) {
           toast.error(`Error fetching customer data: ${error.message}`);
         }
       };
