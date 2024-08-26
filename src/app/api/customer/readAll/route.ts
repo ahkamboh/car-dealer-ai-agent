@@ -1,32 +1,32 @@
 import { NextResponse } from "next/server";
-import { ScanCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
+import { ScanCommand, DynamoDBDocumentClient, ScanCommandInput, ScanCommandOutput } from "@aws-sdk/lib-dynamodb";
 import { dynamoDBClient } from "../../../../../awsConfig";
 
 const documentClient = DynamoDBDocumentClient.from(dynamoDBClient);
 
 export async function GET() {
   try {
-    const params = {
+    const params: ScanCommandInput = {
       TableName: "PamVoiceAgent",
-      ConsistentRead: true, // Force strong consistency
+      ConsistentRead: true,
     };
 
-    const data = await documentClient.send(new ScanCommand(params));
+    let data: Record<string, any>[] = [];
+    let ExclusiveStartKey: Record<string, any> | undefined;
+
+    do {
+      const scanParams: ScanCommandInput = { ...params, ExclusiveStartKey };
+      const scanResults: ScanCommandOutput = await documentClient.send(new ScanCommand(scanParams));
+      data = data.concat(scanResults.Items ?? []);
+      ExclusiveStartKey = scanResults.LastEvaluatedKey;
+    } while (ExclusiveStartKey);
 
     return NextResponse.json(
       {
         message: "Customer profiles retrieved successfully",
-        data: data.Items,
+        data: data,
       },
-      {
-        status: 200,
-        headers: {
-          "Cache-Control":
-            "no-store, no-cache, must-revalidate, proxy-revalidate",
-          Pragma: "no-cache",
-          Expires: "0",
-        },
-      }
+      { status: 200 }
     );
   } catch (error) {
     console.error("Error retrieving customer profiles:", error);
