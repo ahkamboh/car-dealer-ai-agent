@@ -6,6 +6,8 @@ import AnimatedGradientText from "@/components/magicui/animated-gradient-text";
 import SparklesText from '@/components/magicui/sparkles-text';
 import { SignInButton } from '@clerk/nextjs';
 const LazySpline = lazy(() => import('@splinetool/react-spline'));
+
+// update to redeploy on vercel
 interface SplineInstance {
   setVariable: (variable: string, value: number) => void;
 }
