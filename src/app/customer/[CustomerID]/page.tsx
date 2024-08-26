@@ -3,6 +3,7 @@ import BreadcrumbNavigation from "@/app/components/Dashboard/BreadcrumbNavigatio
 import Navbar from "@/app/components/Dashboard/Navbar";
 import Sidebar from "@/app/components/Dashboard/Sidebar";
 import { useParams } from "next/navigation";
+  {/* @ts-ignore */}
 import QueriesForm, { QueryData } from "../../components/Dashboard/QueriesForm";
 import React, { useEffect, useState } from "react";
 
