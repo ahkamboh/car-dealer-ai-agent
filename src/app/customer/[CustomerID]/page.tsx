@@ -3,7 +3,6 @@ import BreadcrumbNavigation from "@/app/components/Dashboard/BreadcrumbNavigatio
 import Navbar from "@/app/components/Dashboard/Navbar";
 import Sidebar from "@/app/components/Dashboard/Sidebar";
 import { useParams } from "next/navigation";
-{/* @ts-ignore */}
 import QueriesForm, { QueryData } from "../../components/Dashboard/QueriesForm";
 import React, { useEffect, useState } from "react";
 
@@ -24,7 +23,7 @@ interface CustomerData {
   VisitOutcome: string;
   Purpose: string;
   CallOutcome: string;
-  SentimentScore: string;
+  SentimentScore: { Neutral: number; Negative: number; Mixed: number; Positive: number } | null;
   Transcript: string;
   Feedback: string;
   Notes: string;
@@ -197,7 +196,7 @@ const CustomerDetails: React.FC = () => {
                 )}
                 {customer && (
                   <>
-                    <h1 className="text-4xl font-bold  ClashDisplay-Bold mb-4">{customer.Name}</h1>
+                    <h1 className="text-4xl font-bold ClashDisplay-Bold mb-4">{customer.Name}</h1>
                     <p className="mb-6 poppins-light">
                       Email: {customer.Email}
                       <br />
@@ -211,9 +210,21 @@ const CustomerDetails: React.FC = () => {
                       <br />
                       Call Outcome: {customer.CallOutcome}
                       <br />
-                      Sentiment Score: {customer.SentimentScore}
+                      {customer.SentimentScore ? (
+                        <>
+                          Sentiment Score:
+                          <ul>
+                            <li>Neutral: {customer.SentimentScore.Neutral}</li>
+                            <li>Negative: {customer.SentimentScore.Negative}</li>
+                            <li>Mixed: {customer.SentimentScore.Mixed}</li>
+                            <li>Positive: {customer.SentimentScore.Positive}</li>
+                          </ul>
+                        </>
+                      ) : (
+                        <span>Sentiment Score: N/A</span>
+                      )}
                       <br />
-                      feedback: {customer.Feedback}
+                      Feedback: {customer.Feedback}
                     </p>
                   </>
                 )}

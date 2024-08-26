@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     });
 
     // Create a dynamic link with the CustomerID for profile update
-    const dynamicLink = `http://localhost:3000/user/${userId}/`
+    const dynamicLink = `https://car-ai-agent.vercel.app/user/${userId}/`
 
     // Set up the email options
     const mailOptions = {
