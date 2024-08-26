@@ -1,12 +1,39 @@
 import { NextResponse } from "next/server";
 import { UpdateCommand, DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import { dynamoDBClient } from "../../../../../awsConfig";
+import { v2 as cloudinary } from "cloudinary";
+
+// Initialize Cloudinary configuration
+cloudinary.config({
+  cloud_name: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.NEXT_PUBLIC_CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 const documentClient = DynamoDBDocumentClient.from(dynamoDBClient);
 
-export async function PUT(req: Request) {
+interface CustomerData {
+  Name?: string;
+  Email?: string;
+  City?: string;
+  ProfilePicture?: string;
+  VisitOutcome?: string;
+  Purpose?: string;
+  Transcript?: string;
+  SentimentScore?: {
+    Positive: number;
+    Negative: number;
+    Neutral: number;
+    Mixed: number;
+  };
+  CallOutcome?: string;
+  Feedback?: string;
+  Notes?: string;
+  OverallSentiment?: string;
+}
+
+export async function PUT(req: Request): Promise<NextResponse> {
   try {
-    // Parse the CustomerID from the query parameters
     const { searchParams } = new URL(req.url);
     const CustomerID = searchParams.get("CustomerID");
 
@@ -17,87 +44,41 @@ export async function PUT(req: Request) {
       );
     }
 
-    const body = await req.json();
-    const {
-      Name,
-      Email,
-      City,
-      ProfilePicture,
-      VisitOutcome,
-      Purpose,
-      Transcript,
-      SentimentScore,
-      CallOutcome,
-      Feedback,
-      Notes,
-      OverallSentiment
-    } = body;
+    const body: CustomerData = await req.json();
 
-    // Build the UpdateExpression and ExpressionAttributeValues dynamically
     let updateExpression = "SET";
     const expressionAttributeNames: Record<string, string> = {};
     const expressionAttributeValues: Record<string, any> = {};
 
-    if (Name !== undefined) {
-      updateExpression += " #name = :name,";
-      expressionAttributeNames["#name"] = "Name";
-      expressionAttributeValues[":name"] = Name;
+    // Handle ProfilePicture upload to Cloudinary
+    let ProfilePictureURL = body.ProfilePicture;
+
+    // Attempt to upload any image to Cloudinary, regardless of format
+    if (ProfilePictureURL) {
+      try {
+        const uploadResponse = await cloudinary.uploader.upload(ProfilePictureURL, {
+          folder: "profile_pictures",
+        });
+        ProfilePictureURL = uploadResponse.secure_url;
+      } catch (uploadError) {
+        console.error("Error uploading image to Cloudinary:", uploadError);
+        return NextResponse.json(
+          { error: "Failed to upload image to Cloudinary." },
+          { status: 500 }
+        );
+      }
     }
 
-    if (Email !== undefined) {
-      updateExpression += " Email = :email,";
-      expressionAttributeValues[":email"] = Email;
-    }
-
-    if (City !== undefined) {
-      updateExpression += " City = :city,";
-      expressionAttributeValues[":city"] = City;
-    }
-
-    if (ProfilePicture !== undefined) {
-      updateExpression += " ProfilePicture = :profilePicture,";
-      expressionAttributeValues[":profilePicture"] = ProfilePicture;
-    }
-
-    if (VisitOutcome !== undefined) {
-      updateExpression += " VisitOutcome = :visitOutcome,";
-      expressionAttributeValues[":visitOutcome"] = VisitOutcome;
-    }
-
-    if (Purpose !== undefined) {
-      updateExpression += " Purpose = :purpose,";
-      expressionAttributeValues[":purpose"] = Purpose;
-    }
-
-    if (Transcript !== undefined) {
-      updateExpression += " Transcript = :transcript,";
-      expressionAttributeValues[":transcript"] = Transcript;
-    }
-
-    if (SentimentScore !== undefined) {
-      updateExpression += " SentimentScore = :sentimentScore,";
-      expressionAttributeValues[":sentimentScore"] = SentimentScore;
-    }
-
-    if (CallOutcome !== undefined) {
-      updateExpression += " CallOutcome = :callOutcome,";
-      expressionAttributeValues[":callOutcome"] = CallOutcome;
-    }
-
-    if (Feedback !== undefined) {
-      updateExpression += " Feedback = :feedback,";
-      expressionAttributeValues[":feedback"] = Feedback;
-    }
-
-    if (Notes !== undefined) {
-      updateExpression += " Notes = :notes,";
-      expressionAttributeValues[":notes"] = Notes;
-    }
-
-    if (OverallSentiment !== undefined) {
-      updateExpression += " OverallSentiment = :overallSentiment,";
-      expressionAttributeValues[":overallSentiment"] = OverallSentiment;
-    }
+    // Build update expression
+    Object.entries(body).forEach(([key, value]) => {
+      if (value !== undefined) {
+        const attributeName = `#${key.toLowerCase()}`;
+        const attributeValue = `:${key.toLowerCase()}`;
+        updateExpression += ` ${attributeName} = ${attributeValue},`;
+        expressionAttributeNames[attributeName] = key;
+        expressionAttributeValues[attributeValue] = key === 'ProfilePicture' ? ProfilePictureURL : value;
+      }
+    });
 
     // Remove the trailing comma from the UpdateExpression
     updateExpression = updateExpression.slice(0, -1);
