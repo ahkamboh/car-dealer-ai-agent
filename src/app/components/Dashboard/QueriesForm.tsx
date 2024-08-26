@@ -71,7 +71,7 @@ const CustomerForm: React.FC<FormProps> = ({
     // Fetch existing customer emails from the backend to check for duplicates
     const fetchExistingEmails = async () => {
       try {
-        const response = await fetch("/api/customer/readAll");
+        const response = await fetch("https://car-ai-agent.vercel.app/api/customer/readAll");
         if (response.ok) {
           const result = await response.json();
           const emails = result.data.map(
@@ -164,7 +164,7 @@ const CustomerForm: React.FC<FormProps> = ({
     }
 
     try {
-      const response = await fetch("/api/customer/create", {
+      const response = await fetch("https://car-ai-agent.vercel.app/api/customer/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
