@@ -24,7 +24,11 @@ const QueriesTable: React.FC<QueriesTableProps> = ({ data, setData }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch('https://car-ai-agent.vercel.app/api/customer/readAll');
+        const response = await fetch(`/api/customer/readAll?_=${new Date().getTime()}`, {
+          headers: {
+            'Cache-Control': 'no-store',
+          },
+        });
         if (response.ok) {
           const result = await response.json();
           setData(result.data);
@@ -45,8 +49,11 @@ const QueriesTable: React.FC<QueriesTableProps> = ({ data, setData }) => {
     }
 
     try {
-      const response = await fetch(`https://car-ai-agent.vercel.app/api/customer/delete?CustomerID=${customerID}`, {
+      const response = await fetch(`/api/customer/delete?CustomerID=${customerID}`, {
         method: 'DELETE',
+        headers: {
+          'Cache-Control': 'no-store',
+        },
       });
 
       if (response.ok) {
@@ -68,10 +75,11 @@ const QueriesTable: React.FC<QueriesTableProps> = ({ data, setData }) => {
 
   const handleSendEmail = async (customerID: string, email: string, password: string) => {
     try {
-      const response = await fetch('https://car-ai-agent.vercel.app/api/sendEmail', {
+      const response = await fetch('/api/sendEmail', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Cache-Control': 'no-store',
         },
         body: JSON.stringify({ userId: customerID, email, password }),
       });
