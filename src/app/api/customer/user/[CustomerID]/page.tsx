@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useForm, FormProvider } from "react-hook-form"
+import { useForm, FormProvider } from "react-hook-form";
 import { useRouter, useParams } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -17,7 +17,7 @@ const EditProfilePage: React.FC = () => {
   const [customerData, setCustomerData] = useState<CustomerData | null>(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const params = useParams();
-  const CustomerID = params.CustomerID;
+  const CustomerID = Array.isArray(params.CustomerID) ? params.CustomerID[0] : params.CustomerID;
 
   const formMethods = useForm<CustomerData>({
     defaultValues: customerData || {},
@@ -37,7 +37,7 @@ const EditProfilePage: React.FC = () => {
             const errorText = await response.text();
             toast.error(`Failed to fetch customer data: ${errorText}`);
           }
-        } catch (error:any) {
+        } catch (error: any) {
           toast.error(`Error fetching customer data: ${error.message}`);
         }
       };
@@ -83,10 +83,10 @@ const EditProfilePage: React.FC = () => {
       }
 
       // Step 2: Call the sentiment analysis endpoint
-       {/* @ts-ignore */}
       const sentimentResponse = await fetch(
         `/api/sentimentAnalysis?PK=CUSTOMER%23${encodeURIComponent(CustomerID)}&SK=PROFILE%23${encodeURIComponent(CustomerID)}`
       );
+
       if (!sentimentResponse.ok) {
         toast.error("Failed to perform sentiment analysis.");
         return;

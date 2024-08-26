@@ -1,5 +1,6 @@
 // components/Queries.tsx
 import React, { useState } from 'react';
+  {/* @ts-ignore */}
 import QueriesTable, { QueryData } from './QueriesTable';
 import QueryForm from './QueriesForm';
 import {
