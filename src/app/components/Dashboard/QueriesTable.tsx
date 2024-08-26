@@ -91,7 +91,7 @@ const QueriesTable: React.FC<QueriesTableProps> = ({ data, setData }) => {
   return (
     <div className="w-full">
       <h1 className="text-2xl font-bold mb-4 text-white">Customer Data</h1>
-      <div className="overflow-x-auto hidden lg:block border rounded-md border-[#5c5a5acb]">
+      <div className="overflow-x-auto hidden xl:block border rounded-md border-[#5c5a5acb]">
         <table className="min-w-full bg-[#261e35] text-white">
           <thead className="bg-[#5c5a5a3f]">
             <tr>
@@ -160,7 +160,7 @@ const QueriesTable: React.FC<QueriesTableProps> = ({ data, setData }) => {
               <div><strong>Visit Outcome:</strong> {item.VisitOutcome}</div>
               <div><strong>Call Outcome:</strong> {item.CallOutcome}</div>
               <div><strong>Purpose:</strong> {item.Purpose}</div>
-              <div className="flex gap-2 justify-center">
+              <div className="sm:flex-row flex  flex-col gap-2 justify-center">
                 <button
                   className="px-3 py-2 text-[#0D99FF] hover:bg-[#5c5a5acb] transition-colors duration-200 border border-[#5c5a5acb] rounded w-full"
                   onClick={() => handleMoreDetails(item.CustomerID)}

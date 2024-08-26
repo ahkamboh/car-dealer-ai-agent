@@ -125,7 +125,7 @@ const AllCustomers: React.FC = () => {
                       </p>
                     </div>
 
-                    <div className="relative z-10 w-1/2 h-[300px] flex flex-col items-center justify-center">
+                    <div className="relative z-10 w-1/2 sm:flex hidden flex-col items-center justify-center">
                       {/* Placeholder Image */}
                       <img src="/card.svg" alt="Card" className="w-full object-contain" />
                     </div>

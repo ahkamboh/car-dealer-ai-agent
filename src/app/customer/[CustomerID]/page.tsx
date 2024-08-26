@@ -231,7 +231,7 @@ const CustomerDetails: React.FC = () => {
                 )}
               </div>
 
-              <div className="relative z-10 w-1/2 h-[300px] flex flex-col items-center justify-center">
+              <div className="relative z-10 w-1/2 h-[300px] sm:flex hidden flex-col items-center justify-center">
                 <img src="/card.svg" alt="Card" className="w-full object-contain" />
               </div>
             </div>
