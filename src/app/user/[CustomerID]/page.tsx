@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { useRouter, useParams } from "next/navigation";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Link from "next/link";
 
 interface CustomerData {
   ProfilePicture?: string;
@@ -18,6 +19,7 @@ interface CustomerData {
 const EditProfilePage: React.FC = () => {
   const [customerData, setCustomerData] = useState<CustomerData | null>(null);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // New state for loading
   const params = useParams();
   const CustomerID = params.CustomerID;
 
@@ -66,6 +68,8 @@ const EditProfilePage: React.FC = () => {
       return;
     }
 
+    setIsLoading(true); // Set loading to true when starting the form submission
+
     try {
       // Step 1: Update the profile and feedback
       const response = await fetch(`/api/customer/update?CustomerID=${CustomerID}`, {
@@ -81,6 +85,7 @@ const EditProfilePage: React.FC = () => {
 
       if (!response.ok) {
         toast.error("Failed to update profile and feedback.");
+        setIsLoading(false); // Set loading to false when an error occurs
         return;
       }
 
@@ -92,6 +97,7 @@ const EditProfilePage: React.FC = () => {
       if (!sentimentResponse.ok) {
         const errorText = await sentimentResponse.text();
         toast.error(`Failed to perform sentiment analysis: ${errorText}`);
+        setIsLoading(false); // Set loading to false when an error occurs
         return;
       }
 
@@ -111,6 +117,7 @@ const EditProfilePage: React.FC = () => {
 
       if (!updateSentimentResponse.ok) {
         toast.error("Failed to update sentiment score.");
+        setIsLoading(false); // Set loading to false when an error occurs
         return;
       }
 
@@ -118,53 +125,88 @@ const EditProfilePage: React.FC = () => {
       setIsSubmitted(true);
     } catch (error) {
       toast.error("An error occurred. Please try again.");
+    } finally {
+      setIsLoading(false); // Set loading to false after submission is complete
     }
   };
 
   return (
-    <div className="container mx-auto p-4 ">
+    <div className="container mx-auto p-4 pt-0 text-black">
       <ToastContainer />
-      <h1 className="text-2xl font-bold mb-4">Update Profile and Feedback</h1>
-
       {isSubmitted ? (
-        <div className="text-green-500 text-center mt-4">Thank you for updating your profile and feedback!</div>
+        <div className="flex items-center justify-center h-screen">
+          <div className="text-green-500 text-2xl text-center">
+            Thank you for updating your profile and feedback!
+          </div>
+        </div>
       ) : (
-        <FormProvider {...formMethods}>
-          <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4">
-            <div>
-              <label htmlFor="Email">Email</label>
-              <Input
-                type="email"
-                id="Email"
-                {...register("Email")}
-                className="rounded-md border-gray-300"
-                readOnly
-              />
+        <>
+          <h1 className="ClashDisplay-Bold text-3xl bg-gradient-to-br from-purple-700 rounded-lg to-pink-600 text-transparent bg-clip-text py-5 text-center">
+            Cortex profile and give feedback!
+          </h1>
+          <div className="bg-gradient-to-br from-purple-700 rounded-lg to-pink-600 h-full text-white relative overflow-hidden p-4 sm:p-8">
+            <div className="flex flex-col lg:flex-row justify-between w-full space-y-8 lg:space-y-0 lg:space-x-8">
+              <div className="relative z-10 flex-1 p-5">
+                <FormProvider {...formMethods}>
+                  <form onSubmit={handleSubmit(handleFormSubmit)} className="space-y-4 w-full">
+                    <div>
+                      <label htmlFor="Email">Email</label>
+                      <Input
+                        type="email"
+                        id="Email"
+                        {...register("Email")}
+                        className="mb-6 bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 cursor-not-allowed"
+                        readOnly
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="ProfilePicture">Profile Picture</label>
+                      <Input
+                        type="file"
+                        id="ProfilePicture"
+                        onChange={handleImageChange}
+                        className="rounded-md outline-none border-none p-2 pt-1.5 text-black bg-white w-full"
+                      />
+                    </div>
+                    <div>
+                      <label htmlFor="Feedback">Feedback</label>
+                      <textarea
+                        required
+                        id="Feedback"
+                        {...register("Feedback")}
+                        className="w-full p-2 rounded-md border-gray-300 text-black"
+                        rows={6}
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      className={`w-full bg-blue-500 hover:bg-blue-600 text-white rounded-md py-2 ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      disabled={isLoading}
+                    >
+                      {isLoading ? "Updating..." : "Update"}
+                    </button>
+                  </form>
+                </FormProvider>
+              </div>
+
+              <div className="relative  w-full lg:w-1/2 h-[200px]  lg:h-[300px] flex items-center justify-center">
+                <img src="/card.svg" alt="Card" className="w-full object-contain" />
+              </div>
             </div>
-            <div>
-              <label htmlFor="ProfilePicture">Profile Picture</label>
-              <Input
-                type="file"
-                id="ProfilePicture"
-                onChange={handleImageChange}
-                className="rounded-md border-gray-300"
-              />
-            </div>
-            <div>
-              <label htmlFor="Feedback">Feedback</label>
-              <textarea
-                id="Feedback"
-                {...register("Feedback")}
-                className="w-full p-2 rounded-md border-gray-300"
-                rows={4}
-              />
-            </div>
-          
-            <button type="submit" className="w-full bg-blue-500 hover:bg-blue-600 text-white rounded-md py-2">
-              Update
-            </button>
-          </form>
-        </FormProvider>
+          </div>
+          <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4 justify-center w-full text-center mt-16">
+            <Link href="https://www.linkedin.com/in/ahkamboh/" target="_blank" className="text-sm text-gray-400 hover:text-white">
+              Privacy Policy
+            </Link>
+            <Link href="https://www.linkedin.com/in/ahkamboh/" target="_blank" className="text-sm text-gray-400 hover:text-white">
+              Terms of Service
+            </Link>
+            <Link href="https://www.linkedin.com/in/ahkamboh/" target="_blank" className="text-sm text-gray-400 hover:text-white">
+              Contact Us
+            </Link>
+          </div>
+        </>
       )}
     </div>
   );
