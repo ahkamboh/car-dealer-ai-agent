@@ -170,10 +170,10 @@ const CustomerForm: React.FC<FormProps> = ({ onSubmit, onCancel, initialData }) 
   };
 
   return (
-    <div className='max-w-2xl space-y-4 w-full text-white p-4 bg-[#342d3e] border rounded-md border-[#5c5a5acb]'>
+    <div className='max-w-2xl p-4 space-y-4 w-full text-white sm:scale-100 scale-75 bg-[#342d3e] border rounded-md border-[#5c5a5acb]'>
       <ToastContainer />
       <form onSubmit={handleSubmit} autoComplete='off'>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid sm:grid-cols-2 gap-4 ">
           <div>
             <label htmlFor="ProfilePicture" className="block text-white">
               Profile Picture (optional)

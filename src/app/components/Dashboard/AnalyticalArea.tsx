@@ -75,7 +75,7 @@ function AnalyticalArea() {
     >
       {/* Cards  */}
       <div className="w-full grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-        <div className="w-full bg-[#3c354a] border rounded-md border-[#5c5a5acb]">
+        <div className="w-full bg-[#3c354a] border rounded-md border-[#5c5a5acb] overflow-hidden">
           <div className="flex w-full text-white p-4 justify-between">
             <div className="plus-jakarta-sans-400 grid">
               Today Queries
@@ -142,7 +142,7 @@ function AnalyticalArea() {
             </svg>
           </div>
         </div>
-        <div className="w-full bg-[#3c354a] border rounded-md border-[#5c5a5acb]">
+        <div className="w-full bg-[#3c354a] border rounded-md border-[#5c5a5acb] overflow-hidden">
           <div className="flex w-full text-white p-4 justify-between">
             <div className="plus-jakarta-sans-400 grid">
               Yesterday Queries
@@ -209,7 +209,7 @@ function AnalyticalArea() {
             </svg>
           </div>
         </div>
-        <div className="w-full bg-[#3c354a] border rounded-md border-[#5c5a5acb]">
+        <div className="w-full bg-[#3c354a] border rounded-md border-[#5c5a5acb] overflow-hidden">
           <div className="flex w-full text-white p-4 justify-between">
             <div className="plus-jakarta-sans-400 grid">
               weekly Queries
@@ -276,7 +276,7 @@ function AnalyticalArea() {
             </svg>
           </div>
         </div>
-        <div className="w-full bg-[#3c354a] border rounded-md border-[#5c5a5acb]">
+        <div className="w-full bg-[#3c354a] border rounded-md border-[#5c5a5acb] overflow-hidden">
           <div className="flex w-full text-white p-4 justify-between">
             <div className="plus-jakarta-sans-400 grid">
               Monthly Queries
@@ -324,7 +324,7 @@ function AnalyticalArea() {
         </div>
 
       </div>
-      <div className="mt-5 flex gap-5">
+      <div className="mt-5 sm:flex grid gap-5">
         <div className="w-full bg-[#3c354a] border rounded-md border-[#5c5a5acb] p-3">
           <AreaCharts />
         </div>

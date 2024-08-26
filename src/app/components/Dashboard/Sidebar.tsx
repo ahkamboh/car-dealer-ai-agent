@@ -34,7 +34,7 @@ const Sidebar: React.FC<SidebarProps> = ({ sidebarOpen }) => {
   return (
     <div
       className={`bg-[#261e35] ${sidebarOpen ? 'border-r' : 'border-0'
-        }  border-[#5c5a5acb]  pt-3 transition-all duration-300 h-screen  p-3 `}
+        }  border-[#5c5a5acb]  pt-3 transition-all duration-300 h-screen  sm:p-3 `}
     > 
        {/* // > ${sidebarOpen ? 'w-20 ' : 'w-0'
     } overflow-hidden` */}

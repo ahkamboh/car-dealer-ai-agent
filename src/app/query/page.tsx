@@ -61,7 +61,7 @@ function Page() {
                {/* @ts-ignore */}
      
           {isFormVisible && (
-            <div className="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50">
+            <div className="fixed inset-0 flex items-center p-5 justify-center z-50 bg-black bg-opacity-50">
                    {/* @ts-ignore */}
                 <QueriesForm onSubmit={handleAddQuery} onCancel={handleCancel} initialData={editQuery} />
             </div>
