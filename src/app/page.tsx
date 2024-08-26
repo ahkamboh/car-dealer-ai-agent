@@ -8,6 +8,7 @@ import { SignInButton } from '@clerk/nextjs';
 const LazySpline = lazy(() => import('@splinetool/react-spline'));
 
 // update to redeploy on vercel
+// updated
 interface SplineInstance {
   setVariable: (variable: string, value: number) => void;
 }
