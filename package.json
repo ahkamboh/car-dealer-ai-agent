@@ -20,6 +20,7 @@
     "@tremor/react": "^3.17.4",
     "aws-sdk": "^2.1682.0",
     "class-variance-authority": "^0.7.0",
+    "cloudinary": "^2.4.0",
     "clsx": "^2.1.1",
     "framer-motion": "^11.3.30",
     "lucide-react": "^0.435.0",

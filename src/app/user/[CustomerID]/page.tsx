@@ -49,16 +49,35 @@ const EditProfilePage: React.FC = () => {
   }, [CustomerID, reset]);
 
   // Handle image file selection and convert it to Base64
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setValue("ProfilePicture", reader.result as string);
-      };
-      reader.readAsDataURL(file);
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", "your_upload_preset"); // Replace with your Cloudinary upload preset
+  
+      try {
+        const response = await fetch(`https://api.cloudinary.com/v1_1/${process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME}/image/upload`, {
+          method: "POST",
+          body: formData,
+        });
+  
+        const data = await response.json();
+        const imageUrl = data.secure_url;
+  
+        if (imageUrl) {
+          setValue("ProfilePicture", imageUrl);
+          toast.success("Profile picture uploaded successfully!");
+        } else {
+          toast.error("Failed to upload profile picture.");
+        }
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        toast.error("An error occurred while uploading the image.");
+      }
     }
   };
+  
 
   const handleFormSubmit = async (data: CustomerData) => {
     if (!customerData) {
