@@ -131,7 +131,7 @@ const EditProfilePage: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto p-4 pt-0 text-black">
+    <div className="min-h-screen bg-gradient-to-br from-purple-700 to-pink-600 flex flex-col justify-center items-center p-4">
       <ToastContainer />
       {isSubmitted ? (
         <div className="flex items-center justify-center h-screen">
@@ -141,10 +141,10 @@ const EditProfilePage: React.FC = () => {
         </div>
       ) : (
         <>
-          <h1 className="ClashDisplay-Bold text-3xl bg-gradient-to-br from-purple-700 rounded-lg to-pink-600 text-transparent bg-clip-text py-5 text-center">
+          <h1 className="ClashDisplay-Bold text-3xl text-white leading-5 py-5 text-center">
             Cortex profile and give feedback!
           </h1>
-          <div className="bg-gradient-to-br from-purple-700 rounded-lg to-pink-600 h-full text-white relative overflow-hidden p-4 sm:p-8">
+          <div className="bg-glass-feed rounded-lg w-full max-w-6xl text-white relative overflow-hidden p-4 sm:p-8">
             <div className="flex flex-col lg:flex-row justify-between w-full space-y-8 lg:space-y-0 lg:space-x-8">
               <div className="relative z-10 flex-1 p-5">
                 <FormProvider {...formMethods}>
@@ -155,7 +155,7 @@ const EditProfilePage: React.FC = () => {
                         type="email"
                         id="Email"
                         {...register("Email")}
-                        className="mb-6 bg-gray-100 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 cursor-not-allowed"
+                        className="mb-6 bg-[#d7d7d7b8] border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 cursor-not-allowed"
                         readOnly
                       />
                     </div>
@@ -165,7 +165,7 @@ const EditProfilePage: React.FC = () => {
                         type="file"
                         id="ProfilePicture"
                         onChange={handleImageChange}
-                        className="rounded-md outline-none border-none p-2 pt-1.5 text-black bg-white w-full"
+                        className="rounded-md outline-none p-2 pt-1.5 text-black border border-white w-full"
                       />
                     </div>
                     <div>
@@ -174,7 +174,7 @@ const EditProfilePage: React.FC = () => {
                         required
                         id="Feedback"
                         {...register("Feedback")}
-                        className="w-full p-2 rounded-md border-gray-300 text-black"
+                        className="w-full text-black p-2 rounded-md resize-none border border-white bg-transparent outline-none"
                         rows={6}
                       />
                     </div>
@@ -190,8 +190,8 @@ const EditProfilePage: React.FC = () => {
                 </FormProvider>
               </div>
 
-              <div className="relative  w-full lg:w-1/2 h-[200px]  lg:h-[300px] flex items-center justify-center">
-                <img src="/card.svg" alt="Card" className="w-full object-contain" />
+              <div className="relative sm:flex hidden w-full lg:w-1/2  items-center justify-center">
+                <img src="/card.svg" alt="Card" className="w-full  h-auto" />
               </div>
             </div>
           </div>
