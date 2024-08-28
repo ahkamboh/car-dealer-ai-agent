@@ -41,7 +41,7 @@ export async function POST(req: Request) {
       });
       ProfilePictureURL = uploadResponse.secure_url; // Store the Cloudinary URL
     }
-
+     
     const customerID = uuidv4();
     const createdAt = new Date().toISOString();
 
