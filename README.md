@@ -1,4 +1,5 @@
 # Cortex - Customer Engagement Dashboard
+![image](https://github.com/user-attachments/assets/6bbc277e-2d7a-45fe-a5d7-07f2bd98ec7a)
 
 ## Overview
 Cortex is a cutting-edge customer engagement dashboard designed specifically for car dealerships. It offers a comprehensive suite of tools that allow dealerships to effectively manage customer interactions, analyze feedback, and optimize customer satisfaction. Cortex empowers dealerships with the ability to track individual customer profiles, monitor sentiment through advanced AI-powered analysis, and leverage synthetic data to simulate real-world customer scenarios.
